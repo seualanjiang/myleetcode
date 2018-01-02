@@ -1,0 +1,59 @@
+链接：https://www.nowcoder.com/questionTerminal/b2b6734cbc0b43088f6084785046b861
+来源：牛客网
+
+* 解析：First note that dp[k] represents the number of BST trees built from
+     * 1....k;
+     *
+     * Then assume we have the number of the first 4 trees: dp[1] = 1 ,dp[2] =2
+     * ,dp[3] = 5, dp[4] =14 , how do we get dp[5] based on these four numbers
+     * is the core problem here.
+     *
+     * The essential process is: to build a tree, we need to pick a root node,
+     * then we need to know how many possible left sub trees and right sub trees
+     * can be held under that node, finally multiply them.
+     *
+     * To build a tree contains {1,2,3,4,5}. First we pick 1 as root, for the
+     * left sub tree, there are none; for the right sub tree, we need count how
+     * many possible trees are there constructed from {2,3,4,5}, apparently it's
+     * the same number as {1,2,3,4}. So the total number of trees under "1"
+     * picked as root is dp[0] * dp[4] = 14. (assume dp[0] =1). Similarly, root
+     * 2 has dp[1]*dp[3] = 5 trees. root 3 has dp[2]*dp[2] = 4, root 4 has
+     * dp[3]*dp[1]= 5 and root 5 has dp[0]*dp[4] = 14. Finally sum the up and
+     * it's done.
+     *
+     * Now, we may have a better understanding of the dp[k], which essentially
+     * represents the number of BST trees with k consecutive nodes. It is used
+     * as database when we need to know how many left sub trees are possible for
+     * k nodes when picking (k+1) as root.
+     */
+     //我的代码和解析
+     //Given n, how many structurally unique BST's (binary search trees) that store values 1...n?
+public class NumBST {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        while (sc.hasNext()) {
+            int n = sc.nextInt();
+            int result = numTrees(n);
+            System.out.println(result);
+        }
+    }
+
+    public static int numTrees(int n) {
+        /*求1到n的整数构成的二叉搜索树的个数
+        * 思路：二叉排序树的左子树所有节点小于根节点，右子树的所有节点大于根节点；一个根节点有的二叉搜索树的个数等于左右子树二叉搜索树的个数的乘积；故先确定根节点i,左子树有1到i-1这i-1个有序树构造的二叉搜索树，即numTrees(i-1),且右子树由i+1到n构造的二叉搜索树，即求i+1到n这n-i个节点构造的二叉搜索树的个数，
+        * 而1到n-i这n-i个节点构造的二叉搜索的个数和i+1到n这n-i个节点构造的二叉搜索树的个数是一样，都是numTrees(n-i)个，要理解numTrees(n)表示n个有序节点构造的二叉搜索树的个数，不仅仅是表示1到n个节点构造的二叉搜索树的个数，还包括其他n个升序节点构造的二叉搜索树构造的个数，例如2到n+1这n个节点构造的二叉搜索树的个数，
+        * 故1到n的二叉搜索树的个数由根节点分别为1到n的二叉搜索树个数的总和，而根节点确定的二叉排序树的个数为等于左右子树二叉搜索树的个数的乘积，用递归做，出栈的条件为为n=1或n=0则return 1
+        * */
+        //健壮性判断
+        if (n < 0)
+            return 0;
+        if (n == 1 || n == 0)//出栈条件
+            return 1;
+        int result = 0;
+        for (int i = 1; i <= n; i++) {
+            //根节点为i的二叉搜索树个数为左右子树的二叉搜索树的乘积
+            result += numTrees(i - 1) * numTrees(n - i);//numTrees(n-i)是表示余下的n-i个节点所构造的二叉搜索树的个数
+        }
+        return result;
+    }
+}
